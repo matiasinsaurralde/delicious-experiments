@@ -1,9 +1,7 @@
 require 'nokogiri'
 require 'pp'
 
-hours = {}
-
-bookmarks = Nokogiri::HTML( File.read( 'bookmarks.html' ) ).css('a').map do |bookmark|
+hours, bookmarks = {}, Nokogiri::HTML( File.read( 'bookmarks.html' ) ).css('a').map do |bookmark|
     if bookmark.attr('tags')
       { :timestamp => Time.at( bookmark.attr('add_date').to_i ), :url => bookmark.attr('href'),
         :tags => bookmark.attr('tags').split(','), :title => bookmark.inner_text()
