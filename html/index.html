@@ -10,7 +10,7 @@
 <script>
 
 var margin = {top: 20, right: 80, bottom: 30, left: 50},
-    width = 1400 - margin.left - margin.right,
+    width = 1200 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
 
 var parseDate = d3.time.format("%H/%Y").parse;
@@ -51,7 +51,7 @@ d3.tsv("out.tsv", function(error, data) {
     d.date = parseDate( dateFixedYear );
   });
 
-  var cities = color.domain().map(function(name) {
+  var months = color.domain().map(function(name) {
     return {
       name: name,
       values: data.map(function(d) {
@@ -63,8 +63,8 @@ d3.tsv("out.tsv", function(error, data) {
   x.domain(d3.extent(data, function(d) { return d.date; }));
 
   y.domain([
-    d3.min(cities, function(c) { return d3.min(c.values, function(v) { return v.bookmarks; }); }),
-    d3.max(cities, function(c) { return d3.max(c.values, function(v) { return v.bookmarks; }); })
+    d3.min(months, function(c) { return d3.min(c.values, function(v) { return v.bookmarks; }); }),
+    d3.max(months, function(c) { return d3.max(c.values, function(v) { return v.bookmarks; }); })
   ]);
 
   svg.append("g")
@@ -82,17 +82,17 @@ d3.tsv("out.tsv", function(error, data) {
       .style("text-anchor", "end")
       .text("# of bookmarks");
 
-  var city = svg.selectAll(".city")
-      .data(cities)
+  var month = svg.selectAll(".month")
+      .data(months)
     .enter().append("g")
-      .attr("class", "city");
+      .attr("class", "month");
 
-  city.append("path")
+  month.append("path")
       .attr("class", "line")
       .attr("d", function(d) { return line(d.values); })
       .style("stroke", function(d) { return color(d.name); });
 
-  city.append("text")
+  month.append("text")
       .datum(function(d) { return {name: d.name, value: d.values[d.values.length - 1]}; })
       .attr("transform", function(d) { return "translate(" + x(d.value.date) + "," + y(d.value.bookmarks) + ")"; 
 })
