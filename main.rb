@@ -3,18 +3,20 @@ require 'pp'
 
 hours = {}
 
-c = 0
-
-bookmarks = Nokogiri::HTML( File.read( 'bookmarks.html' ) ).css('a')
+bookmarks = Nokogiri::HTML( File.read( 'bookmarks.html' ) ).css('a').map do |bookmark|
+    if bookmark.attr('tags')
+      { :timestamp => Time.at( bookmark.attr('add_date').to_i ), :url => bookmark.attr('href'),
+        :tags => bookmark.attr('tags').split(','), :title => bookmark.inner_text()
+      }
+    end
+end
 
 bookmarks.each do |bookmark|
-
-  timestamp = Time.at( bookmark.attr('add_date').to_i )
-  hour = timestamp.strftime('%H').to_i
-
-  hours.store( hour, 0 ) if !hours[hour]
-  hours[ hour ] += 1
-
+  if bookmark
+    hour = bookmark[:timestamp].strftime('%H').to_i
+    hours[ hour ] = 0 if !hours[ hour ]
+    hours[ hour ] += 1
+  end
 end
 
 hours.each { |hour, n| hours[hour] = ( n/bookmarks.size.to_f*100.0 ).round(2) }
