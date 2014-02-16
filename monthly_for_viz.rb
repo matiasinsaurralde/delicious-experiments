@@ -36,30 +36,29 @@ bookmarks.each do |bookmark|
   end
 end
 
-open( 'out.tsv', 'a' ) { |f| f.print("time\t") }
-
 months.each do |month, hours|
-  label = Time.strptime( month, '%m/%Y' ).strftime('%b %Y')
-  open('out.tsv', 'a') do |f|
-    f.print( label )
-    f.print( "\t" ) if months.keys.last != month
-  end
-end
-
-open( 'out.tsv', 'a' ) { |f| f.print("\n") }
-
-24.times do |n|
-  open( 'out.tsv', 'a' ) { |f| f.print( "#{n}\t") }
-  col_index = 0
-  months.each do |month, hours|
-
-    hours.fill_empty_hours!( 0 )
-    hours = hours.sort_by_hour()
-    open( 'out.tsv', 'a' ) do |f|
-      f.print( hours[ n ] )
-      f.print( "\t" ) if col_index < 22
-      col_index += 1
+  date_str = Time.strptime( month, '%m/%Y' ).strftime('%b_%Y')
+  ln = "var #{date_str} = ["
+  hours.fill_empty_hours!(0)
+  hours = hours.sort_by_hour()
+  hours.each do |hour, bookmarks|
+    ln += "[#{hour}, #{bookmarks}]"
+    if hour != 23
+      ln += ', '
     end
   end
-  open( 'out.tsv', 'a' ) { |f| f.puts() }
+  ln += "];"
+  open('data.js', 'a') { |f| f.puts(ln) }
+end
+
+open('data.js', 'a') { |f| f.print( 'var months = [' ) }
+months.each do |month, hours|
+  open('data.js', 'a') do |f|
+    f.print("#{Time.strptime( month, '%m/%Y' ).strftime('%b_%Y')}")
+    if month == months.keys.last
+      f.print '];'
+    else
+      f.print ','
+    end
+  end
 end
