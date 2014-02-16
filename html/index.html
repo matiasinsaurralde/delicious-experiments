@@ -4,16 +4,27 @@
   <title>playing with del.icio.us data</title>
   <script src="jquery.min.js"></script>
   <script src="jquery.flot.min.js"></script>
+  <script src="jquery.flot.time.min.js"></script>
 </head>
 <body>
   <div>
-    <div id='chart' style="width:600px;height:400px;"></div>
+    <div id='chart' style="width:900px;height:600px;"></div>
     <script>
 
-var a = [ [1949,0.10], [1950,0.15] ];
+var a = [ ['1/1/2014',7.0], ['2/1/2014',3.2] ];
+//var b = [ ['2014/1/1',0.7], ['2014/1/2',0.22] ];
 
 $(function () {
-    $.plot($("#chart"), [ a]);
+    $.plot($("#chart"), [a], {
+      yaxis: {},
+      xaxis: {
+               mode: 'time', minTickSize: [1, 'day'], timeformat: '%d/%m/%y',
+               min: (new Date("2014/1/1")).getTime(),
+               max: (new Date("2014/1/20")).getTime(),
+             },
+      "lines": { "show": "true" },
+      "points": { "show": "true" }
+    });
 });
 
 </script>
