@@ -2,6 +2,8 @@ require 'nokogiri'
 require 'time'
 require 'pp'
 
+OUTPUT_FILE = 'html/data.js'
+
 class Hash
   def fill_empty_hours!( default_value = 0.0 )
     24.times.to_a.each do |hour|
@@ -48,12 +50,12 @@ months.each do |month, hours|
     end
   end
   ln += "];"
-  open('data.js', 'a') { |f| f.puts(ln) }
+  open(OUTPUT_FILE, 'a') { |f| f.puts(ln) }
 end
 
-open('data.js', 'a') { |f| f.print( 'var months = [' ) }
+open(OUTPUT_FILE, 'a') { |f| f.print( 'var months = [' ) }
 months.each do |month, hours|
-  open('data.js', 'a') do |f|
+  open(OUTPUT_FILE, 'a') do |f|
     f.print("#{Time.strptime( month, '%m/%Y' ).strftime('%b_%Y')}")
     if month == months.keys.last
       f.print '];'
